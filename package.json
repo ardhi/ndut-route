@@ -1,0 +1,24 @@
+{
+  "name": "ndut-route",
+  "version": "0.5.0",
+  "description": "Route for Ndut Framework",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ardhi/ndut-route.git"
+  },
+  "keywords": [
+    "ndut",
+    "route",
+    "fastify",
+    "framework"
+  ],
+  "author": "Ardhi Lukianto <ardhi@lukianto.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ardhi/ndut-route/issues"
+  },
+  "homepage": "https://github.com/ardhi/ndut-route#readme"
+}
