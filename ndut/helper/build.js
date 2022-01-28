@@ -4,7 +4,7 @@ module.exports = async (scope, opts = {}) => {
   let { name, scanDirs, prefix = '', notFoundMsg = 'Page not found', customBuilder } = opts
   const { _, fs, fastGlob, getConfig, getNdutConfig } = scope.ndut.helper
   const { scan } = scope.ndutRoute.helper
-  const config = await getConfig()
+  const config = getConfig()
   const decorators = ['main', 'reply', 'request']
 
   scope.addHook('onRequest', async (request, reply) => {
@@ -15,7 +15,7 @@ module.exports = async (scope, opts = {}) => {
 
   let hookFiles = []
   for (let n of config.nduts) {
-    n = await getNdutConfig(n)
+    n = getNdutConfig(n)
     scanDirs = _.concat(scanDirs, [
       { dir: `${n.dir}${dirPrefix}/route`, options: { prefix: n.prefix, alias: n.alias } },
     ])
@@ -43,17 +43,20 @@ module.exports = async (scope, opts = {}) => {
   }
 
   for (const r of routes) {
-    let module = require(r.file)
-    if (_.isFunction(module)) module = await module.call(scope)
-    module.url = r.url
-    module.ndutAlias = r.alias
+    let mod = require(r.file)
+    if (_.isFunction(mod)) {
+      if (mod.length === 0) mod = await mod.call(scope)
+      else mod = { handler: mod }
+    }
+    mod.url = r.url
+    mod.ndutAlias = r.alias
     if (!r.method.includes('CUSTOM')) {
-      module.method = r.method
-      scope.route(module)
+      mod.method = r.method
+      scope.route(mod)
 
       scope.log.debug(`* ${_.padEnd('[' + r.method + ']', 8, ' ')} ${_.isEmpty(prefix) ? '' : ('/' + prefix)}${r.url}`)
     } else if (_.isFunction(customBuilder)) {
-      await customBuilder(scope, prefix, module)
+      await customBuilder(scope, prefix, mod)
     }
   }
 }

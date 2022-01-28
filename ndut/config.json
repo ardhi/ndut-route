@@ -1,4 +1,4 @@
 {
-  "name": "ndut-route",
-  "prefix": ""
+  "prefix": "",
+  "unauthenticated": "login"
 }
