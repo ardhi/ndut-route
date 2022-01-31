@@ -14,7 +14,7 @@ module.exports = async function (scope, name, notFoundMsg) {
   let hookFiles = []
   for (const n of config.nduts) {
     const cfg = getNdutConfig(n)
-    const interceptor = `${cfg.dir}${dirPrefix}/intercept.js`
+    const interceptor = `${cfg.dir}${dirPrefix}/interceptor.js`
     if (fs.existsSync(interceptor)) {
       const mod = require(interceptor)
       await mod.call(scope, cfg)
