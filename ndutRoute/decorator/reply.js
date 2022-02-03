@@ -6,8 +6,7 @@ module.exports = {
     let html = ''
     this.header('Content-Type', 'text/html; charset=' + cfg.charset)
     if (scope.ndutView) {
-      const theme = _.get(this.request, 'site.pref.theme', 'default')
-      html = scope.ndutView.helper.renderTpl(name, locals, theme)
+      html = scope.ndutView.helper.renderTpl(name, locals, this.request)
     } else {
       const { source } = scope.ndutRoute.helper.renderTpl(name)
       const compiled = _.template(source)
