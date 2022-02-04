@@ -9,11 +9,9 @@ module.exports = {
       html = scope.ndutView.helper.renderTpl(name, locals, this.request)
     } else {
       const { source } = scope.ndutRoute.helper.renderTpl(name)
-      const compiled = _.template(source, {
-        imports: {
-          t: scope.ndutI18N.helper.t
-        }
-      })
+      const opts = {}
+      if (this.request.i18n) opts.imports = { t: this.request.i18n.t }
+      const compiled = _.template(source, opts)
       html = compiled(locals)
     }
     this.send(html)
@@ -22,7 +20,7 @@ module.exports = {
     const scope = this.server
     const { _ } = scope.ndut.helper
     let result = payload
-    if (scope.ndutI18N && _.isString(payload)) result = scope.ndutI18N.helper.t(payload, options)
+    if (this.request.i18n && _.isString(payload)) result = this.request.i18n.t(payload, options)
     this.send(result)
   }
 }
