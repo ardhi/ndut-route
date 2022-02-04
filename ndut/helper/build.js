@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = async (scope, opts = {}) => {
-  let { name, scanDirs, prefix = '', notFoundMsg = 'Page not foud', customBuilder } = opts
+  let { name, scanDirs, prefix = '', notFoundMsg = 'pageNotFound', customBuilder } = opts
   const { _, getConfig, getNdutConfig } = scope.ndut.helper
   const { scan, prepInterception } = scope.ndutRoute.helper
   await prepInterception(scope, name, notFoundMsg)
