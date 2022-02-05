@@ -1,10 +1,13 @@
-module.exports = function (path, ndut = 'app', params = {}) {
+module.exports = function (path, ndut = false, params = {}) {
   const { _, getNdutConfig } = this.ndut.helper
-  const config = getNdutConfig(ndut)
+  const config = ndut ? getNdutConfig(ndut) : null
+  const ndutPrefix = ndut ? (ndut === 'app' ? '' : ('/' + config.prefix)) : ''
   const routeCfg = getNdutConfig('ndut-route')
-  let newPath = `${routeCfg.prefix}${config ? ('/' + config.prefix) : ''}/${_.trim(path, '/')}`
+  let newPath = `${routeCfg.prefix}${ndutPrefix}/${_.trim(path, '/')}`
+  console.log(newPath)
   _.forOwn(params, (v, k) => {
-    newPath = newPath.replaceAll(`:${k}`, v)
+    const re = new RegExp(`:${k}`, 'g')
+    newPath = newPath.replace(re, v)
   })
   return newPath
 }

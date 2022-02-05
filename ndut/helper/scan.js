@@ -36,7 +36,7 @@ module.exports = async function (dir = '', options = {}) {
     })
     if (valid && _.intersection(verbs, method).length > 0) {
       const check = _.intersection(paths[url], method)
-      if (check.length > 0) throw new this.Boom.Boom(`Method '${method.join('-')}' clashed with '${paths[url].join('-')}' in path '${url}'`)
+      if (check.length > 0) throw this.Boom.internal(`Method '${method.join('-')}' clashed with '${paths[url].join('-')}' in path '${url}'`)
       paths[url] = _.uniq(_.concat(paths[url], method))
       result.push({ prefix: options.prefix, file, url, method, alias: options.alias })
     }

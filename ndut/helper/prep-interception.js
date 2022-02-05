@@ -5,12 +5,7 @@ module.exports = async function (scope, name, notFoundMsg) {
   const config = getConfig()
   const decorators = ['main', 'reply', 'request']
 
-  scope.addHook('onRequest', async (request, reply) => {
-    if (!request.routerPath) throw scope.Boom.notFound(notFoundMsg)
-  })
-
   const dirPrefix = name ? `/${name}` : ''
-
   let hookFiles = []
   for (const n of config.nduts) {
     const cfg = getNdutConfig(n)
@@ -19,6 +14,12 @@ module.exports = async function (scope, name, notFoundMsg) {
       const mod = require(interceptor)
       await mod.call(scope, cfg)
     }
+  }
+  scope.addHook('onRequest', async (request, reply) => {
+    if (!request.routerPath) throw scope.Boom.notFound(notFoundMsg)
+  })
+  for (const n of config.nduts) {
+    const cfg = getNdutConfig(n)
     for (const d of decorators) {
       const file = `${cfg.dir}${dirPrefix}/decorator/${d}.js`
       if (fs.existsSync(file)) {

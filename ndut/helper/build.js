@@ -24,6 +24,10 @@ module.exports = async (scope, opts = {}) => {
       if (mod.length === 0) mod = await mod.call(scope)
       else mod = { handler: mod }
     }
+    if (scope.ndutI18N) {
+      const cfg = getNdutConfig('ndut-i18n')
+      if (cfg.lang === 'detect' && cfg.detectFromParams) r.url = '/:lang' + r.url
+    }
     mod.url = r.url
     mod.ndutAlias = r.alias
     if (!r.method.includes('CUSTOM')) {
