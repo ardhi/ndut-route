@@ -3,8 +3,8 @@ const path = require('path')
 module.exports = async (scope, { name, scanDirs = [], prefix = '', notFoundMsg = 'pageNotFound', customBuilder, routes = [], noInterception, noScan }) => {
   const { _, getConfig, getNdutConfig } = scope.ndut.helper
   const { scan, prepInterception } = scope.ndutRoute.helper
-  if (!noInterception) await prepInterception(scope, name, notFoundMsg)
   const config = getConfig()
+  if (!noInterception) await prepInterception(scope, name, notFoundMsg)
   const dirPrefix = name ? `/${name}` : ''
   if (!noScan) {
     for (const n of config.nduts) {
