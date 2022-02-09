@@ -2,7 +2,7 @@ const build = require('./helper/build')
 const handleMisc = require('../lib/handle-misc')
 
 module.exports = async function (scope, options) {
-  const { _, fs, getConfig, getNdutConfig } = scope.ndut.helper
+  const { _, fs, getConfig, iterateNduts } = scope.ndut.helper
   const config = getConfig()
   if (config.httpServer.disabled) {
     scope.log.warn('HTTP server is disabled, route generation canceled')
@@ -21,16 +21,15 @@ module.exports = async function (scope, options) {
   await handleMisc.call(scope)
   // scope.ndutRoute.ctx = scope
   // TODO: replace these hacks with cleaner cascade register
-  for (const n of config.nduts) {
-    const cfg = getNdutConfig(n)
+  await iterateNduts(async function(cfg) {
     const file = `${cfg.dir}/ndutRoute/child-plugin.js`
-    if (!fs.existsSync(file)) continue
-    if (cfg.disablePlugin) {
-      scope.log.warn(`Plugin '${cfg.instanceName}' is disabled`)
-      continue
+    if (fs.existsSync(file)) {
+      if (cfg.disablePlugin) scope.log.warn(`Plugin '${cfg.instanceName}' is disabled`)
+      else {
+        scope.log.info(`Register '${cfg.instanceName}'`)
+        const mod = require(file)
+        await scope.register(mod, cfg)
+      }
     }
-    scope.log.info(`Register '${cfg.instanceName}'`)
-    const mod = require(file)
-    await scope.register(mod, cfg)
-  }
+  })
 }
