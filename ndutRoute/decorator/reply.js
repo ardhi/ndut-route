@@ -1,5 +1,16 @@
+const getSource = function (scope, name, locals = {}) {
+  locals.page = locals.page || {}
+  const { _ } = scope.ndut.helper
+  const { source } = scope.ndutRoute.helper.renderTpl(name)
+  const opts = {}
+  const t = this.request.i18n ? this.request.i18n.t : ((val) => (val))
+  opts.imports = { t }
+  const compiled = _.template(source, opts)
+  return compiled(locals)
+}
+
 module.exports = {
-  view: function (name, locals) {
+  view: function (name, locals = {}) {
     const scope = this.server
     const { _, getNdutConfig } = scope.ndut.helper
     const cfg = getNdutConfig('ndut-route')
@@ -8,11 +19,8 @@ module.exports = {
     if (scope.ndutView) {
       html = scope.ndutView.helper.renderTpl(name, locals, this.request)
     } else {
-      const { source } = scope.ndutRoute.helper.renderTpl(name)
-      const opts = {}
-      if (this.request.i18n) opts.imports = { t: this.request.i18n.t }
-      const compiled = _.template(source, opts)
-      html = compiled(locals)
+      const content = getSource.call(this, scope, name, locals)
+      html = getSource.call(this, scope, 'route:/layout', { content })
     }
     this.send(html)
   },
