@@ -51,7 +51,7 @@ module.exports = async function (scope, name, notFoundMsg) {
       if (!hooks[method]) hooks[method] = []
       hooks[method].push(mod)
     }
-    (hooks || {}).onRequest.push({
+    (hooks || {}).preHandler.push({
       level: 30,
       name: 'notFound',
       handler: async function (request, reply) {

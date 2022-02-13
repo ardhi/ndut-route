@@ -1,8 +1,9 @@
 const path = require('path')
 
-module.exports = async (scope, { name, scanDirs = [], prefix = '', notFoundMsg = 'pageNotFound', customBuilder, routes = [], noInterception, noScan }) => {
+module.exports = async function (scope, { name, scanDirs = [], prefix = '', notFoundMsg = 'pageNotFound', customBuilder, routes = [], noInterception, noScan }) {
   const { _, getConfig, getNdutConfig } = scope.ndut.helper
   const { scan, prepInterception } = scope.ndutRoute.helper
+  const restCfg = getNdutConfig('ndut-rest')
   const config = getConfig()
   if (!noInterception) await prepInterception(scope, name, notFoundMsg)
   const dirPrefix = name ? `/${name}` : ''
@@ -23,6 +24,11 @@ module.exports = async (scope, { name, scanDirs = [], prefix = '', notFoundMsg =
     if (_.isFunction(mod)) {
       if (mod.length === 0) mod = await mod.call(scope)
       else mod = { handler: mod }
+    }
+    if (mod.schema) {
+      _.each(r.method, m => {
+        if (_.get((restCfg || {}), `hideSwaggerTags.${r.url}`, []).includes(m)) mod.schema.tags = false
+      })
     }
     if (scope.ndutI18N && !noInterception) {
       const cfg = getNdutConfig('ndut-i18n')
