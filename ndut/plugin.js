@@ -10,6 +10,21 @@ module.exports = async function (scope, options) {
   }
   let scanDirs = []
   let routes = []
+  if (!(this.ndutView || _.get(options, 'disable.purecssWithView'))) {
+    routes.push({
+      url: '/purecss/:name',
+      method: 'GET',
+      handler: async (request, reply) => {
+        const purecss = require('purecss')
+        let content = ''
+        try {
+          content = purecss.getFile(request.params.name)
+        } catch (err) {}
+        reply.send(content)
+      }
+    })
+  }
+
   scanDirs = _.concat(scanDirs, options.scan || [])
   await iterateNduts(async function (cfg) {
     try {

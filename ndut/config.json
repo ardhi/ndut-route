@@ -1,5 +1,8 @@
 {
   "prefix": "",
   "charset": "utf-8",
-  "disablePurecssWithView": true
+  "disable": {
+    "purecssWithView": true,
+    "routes": []
+  }
 }
