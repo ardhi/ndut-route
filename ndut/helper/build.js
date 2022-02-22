@@ -5,6 +5,7 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
   const routeOpts = getNdutConfig(name)
   const { scan, prepInterception } = scope.ndutRoute.helper
   const restCfg = getNdutConfig('ndut-rest')
+  const routeCfg = getNdutConfig('ndut-route')
   const config = getConfig()
   if (!noInterception) await prepInterception(scope, name, notFoundMsg)
   const dirPrefix = name ? `/${name}` : ''
@@ -23,6 +24,7 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
   const disableRoutes = []
 
   for (const r of routes) {
+    if (name === 'ndutRoute' && r.url === routeCfg.home) r.url = '/'
     let mod = r.file ? require(r.file) : _.cloneDeep(r)
     if (_.isFunction(mod)) {
       if (mod.length === 0) mod = await mod.call(scope)
@@ -32,6 +34,15 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
       _.each(r.method, m => {
         if (_.get((restCfg || {}), `hideSwaggerTags.${r.url}`, []).includes(m)) mod.schema.tags = false
       })
+    }
+    mod.dependency = mod.dependency || []
+    if (_.isString(mod.dependency)) mod.dependency = [mod.dependency]
+    if (mod.dependency.length > 0) {
+      const intersect = _.intersection(config.nduts, mod.dependency)
+      if (intersect.length !== mod.dependency.length) {
+        disableRoutes.push(r.url)
+        continue
+      }
     }
     let disabled = _.get(routeOpts, 'disable.routes')
     if (disabled) {

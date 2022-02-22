@@ -1,6 +1,7 @@
 {
   "prefix": "",
   "charset": "utf-8",
+  "home": "",
   "disable": {
     "purecssWithView": true,
     "routes": []
