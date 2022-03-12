@@ -21,7 +21,7 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
     }
   }
 
-  const disableRoutes = []
+  let disabledRoutes = []
 
   for (const r of routes) {
     if (name === 'ndutRoute' && r.url === routeCfg.home) r.url = '/'
@@ -40,7 +40,7 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
     if (mod.dependency.length > 0) {
       const intersect = _.intersection(config.nduts, mod.dependency)
       if (intersect.length !== mod.dependency.length) {
-        disableRoutes.push(r.url)
+        disabledRoutes.push(r.url)
         continue
       }
     }
@@ -57,7 +57,7 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
         }
       })
       if (match) {
-        if (!disableRoutes.includes(r.url)) disableRoutes.push(r.url)
+        if (!disabledRoutes.includes(r.url)) disabledRoutes.push(r.url)
         continue
       }
     }
@@ -76,8 +76,10 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
       await customBuilder(scope, prefix, mod)
     }
   }
-  if (disableRoutes.length > 0) {
-    _.each(disableRoutes, d => {
+  disabledRoutes = _.uniq(disabledRoutes)
+  scope[routeOpts.instanceName].helper.disabledRoutes = disabledRoutes
+  if (disabledRoutes.length > 0) {
+    _.each(disabledRoutes, d => {
       scope.log.warn(`* All routes to '${d}' is disabled`)
     })
   }
