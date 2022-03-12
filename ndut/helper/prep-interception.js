@@ -6,6 +6,32 @@ module.exports = async function (scope, name, notFoundMsg) {
   const decorators = ['main', 'reply', 'request']
 
   const dirPrefix = name ? `/${name}` : ''
+
+  // fix fastify-multipart req.body
+  scope.addHook('preValidation', (request, reply, done) => {
+    // const type = _.get(request, 'headers.content-type', '')
+    // if (type.startsWith('multipart/form-data')) {
+    if (request.isMultipart()) {
+      const body = Object.fromEntries(
+        Object.keys(request.body).map((key) => {
+          let value = request.body[key].value
+          if (value === 'null') value = null
+          if (value === 'undefined') value = undefined
+          return [key, value]
+        })
+      )
+      request.body = body
+    }
+    done()
+  })
+  // trash uploaded dir, if any
+  if (config.cleanUploadedItems) {
+    scope.addHook('onResponse', async (request, reply) => {
+      const dir = `${config.dir.upload}/${request.id}`
+      await fs.remove(dir)
+    })
+  }
+
   let hookFiles = []
   for (const n of config.nduts) {
     const cfg = getNdutConfig(n)
