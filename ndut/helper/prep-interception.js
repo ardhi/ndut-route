@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = async function (scope, name, notFoundMsg) {
-  const { _, fs, getConfig, getNdutConfig, fastGlob } = scope.ndut.helper
+  const { _, fs, getConfig, getNdutConfig, fastGlob, queryString } = scope.ndut.helper
   const config = getConfig()
   const decorators = ['main', 'reply', 'request']
 
@@ -12,15 +12,19 @@ module.exports = async function (scope, name, notFoundMsg) {
     // const type = _.get(request, 'headers.content-type', '')
     // if (type.startsWith('multipart/form-data')) {
     if (request.isMultipart()) {
+      /*
       const body = Object.fromEntries(
         Object.keys(request.body || {}).map((key) => {
           let value = request.body[key].value
           if (value === 'null') value = null
           if (value === 'undefined') value = undefined
+          // TODO: boolean, etc ?
           return [key, value]
         })
       )
       request.body = body
+      */
+      request.body = queryString.parse(JSON.stringify(request.body), { parseBoolean: true, parseNumbers: true })
     }
     done()
   })
