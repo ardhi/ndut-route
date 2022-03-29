@@ -13,7 +13,7 @@ module.exports = async function (scope, name, notFoundMsg) {
     // if (type.startsWith('multipart/form-data')) {
     if (request.isMultipart()) {
       const body = Object.fromEntries(
-        Object.keys(request.body).map((key) => {
+        Object.keys(request.body || {}).map((key) => {
           let value = request.body[key].value
           if (value === 'null') value = null
           if (value === 'undefined') value = undefined
