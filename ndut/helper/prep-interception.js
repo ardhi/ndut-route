@@ -12,19 +12,18 @@ module.exports = async function (scope, name, notFoundMsg) {
     // const type = _.get(request, 'headers.content-type', '')
     // if (type.startsWith('multipart/form-data')) {
     if (request.isMultipart()) {
-      /*
       const body = Object.fromEntries(
         Object.keys(request.body || {}).map((key) => {
           let value = request.body[key].value
           if (value === 'null') value = null
           if (value === 'undefined') value = undefined
-          // TODO: boolean, etc ?
+          if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) value = Number(value)
+          if (value.toLowerCase() === 'true' || value.toLowerCase() === 'false') value = value.toLowerCase() === 'true'
           return [key, value]
         })
       )
       request.body = body
-      */
-      request.body = queryString.parse(JSON.stringify(request.body), { parseBoolean: true, parseNumbers: true })
+      // request.body = queryString.parse(JSON.stringify(request.body), { parseBoolean: true, parseNumbers: true })
     }
     done()
   })
