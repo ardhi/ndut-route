@@ -12,6 +12,7 @@ module.exports = async function (dir = '', options = {}) {
   for (const file of files) {
     let url = file
       .replace(dir, '')
+      .replace(/@@@/g, '*')
       .replace(/@@/g, '\t')
       .replace(/@/g, ':')
       .replace(/\t/g, '@')

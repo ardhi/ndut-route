@@ -18,7 +18,7 @@ module.exports = async function (scope, name, notFoundMsg) {
           if (value === 'null') value = null
           if (value === 'undefined') value = undefined
           if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) value = Number(value)
-          if (value.toLowerCase() === 'true' || value.toLowerCase() === 'false') value = value.toLowerCase() === 'true'
+          if (typeof value === 'string' && value.trim() !== '' && (value.toLowerCase() === 'true' || value.toLowerCase() === 'false')) value = value.toLowerCase() === 'true'
           return [key, value]
         })
       )
