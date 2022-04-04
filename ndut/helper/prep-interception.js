@@ -11,19 +11,29 @@ module.exports = async function (scope, name, notFoundMsg) {
   scope.addHook('preValidation', (request, reply, done) => {
     // const type = _.get(request, 'headers.content-type', '')
     // if (type.startsWith('multipart/form-data')) {
+    const normalizeValue = (value) => {
+      if (value === 'null') value = null
+      if (value === 'undefined') value = undefined
+      if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) value = Number(value)
+      if (typeof value === 'string' && value.trim() !== '' && (value.toLowerCase() === 'true' || value.toLowerCase() === 'false')) value = value.toLowerCase() === 'true'
+      return value
+    }
     if (request.isMultipart()) {
       const body = Object.fromEntries(
         Object.keys(request.body || {}).map((key) => {
-          let value = request.body[key].value
-          if (value === 'null') value = null
-          if (value === 'undefined') value = undefined
-          if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) value = Number(value)
-          if (typeof value === 'string' && value.trim() !== '' && (value.toLowerCase() === 'true' || value.toLowerCase() === 'false')) value = value.toLowerCase() === 'true'
+          let item = request.body[key]
+          let value
+          if (key.endsWith('[]') && !_.isArray(item)) item = [item]
+          if (_.isArray(item)) {
+            value = _.map(item, i => normalizeValue(i.value))
+          } else {
+            value = normalizeValue(item.value)
+          }
+          key = key.replace('[]', '')
           return [key, value]
         })
       )
       request.body = body
-      // request.body = queryString.parse(JSON.stringify(request.body), { parseBoolean: true, parseNumbers: true })
     }
     done()
   })
