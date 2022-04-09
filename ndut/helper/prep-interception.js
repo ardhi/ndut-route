@@ -13,9 +13,15 @@ module.exports = async function (scope, name, notFoundMsg) {
     // if (type.startsWith('multipart/form-data')) {
     const normalizeValue = (value) => {
       if (value === 'null') value = null
-      if (value === 'undefined') value = undefined
-      if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) value = Number(value)
-      if (typeof value === 'string' && value.trim() !== '' && (value.toLowerCase() === 'true' || value.toLowerCase() === 'false')) value = value.toLowerCase() === 'true'
+      else if (value === 'undefined') value = undefined
+      else if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) value = Number(value)
+      else if (typeof value === 'string' && value.trim() !== '' && (value.toLowerCase() === 'true' || value.toLowerCase() === 'false')) value = value.toLowerCase() === 'true'
+      else {
+        try {
+          const parsed = JSON.parse(value)
+          if (_.isPlainObject(parsed)) value = parsed
+        } catch (err) {}
+      }
       return value
     }
     if (request.isMultipart()) {
