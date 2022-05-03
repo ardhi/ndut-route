@@ -100,6 +100,7 @@ module.exports = async function (scope, name, notFoundMsg) {
       level: 30,
       name: 'notFound',
       handler: async function (request, reply) {
+        // if (request.params['*']) return
         if (!request.routerPath) throw scope.Boom.notFound(notFoundMsg)
       }
     })
