@@ -68,8 +68,10 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
     }
     mod.url = r.url
     mod.ndutAlias = r.alias
+
     if (!r.method.includes('CUSTOM')) {
       mod.method = r.method
+      mod.config = { config: { name: r.name } }
       scope.route(mod)
       scope.log.debug(`* ${_.padEnd('[' + r.method + ']', 8, ' ')} ${_.isEmpty(prefix) ? '' : ('/' + prefix)}${r.url}`)
     } else if (_.isFunction(customBuilder)) {
