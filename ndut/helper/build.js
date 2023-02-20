@@ -62,6 +62,7 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
       }
     }
 
+    if (!mod.name) mod.name = _.camelCase(r.url)
     if (scope.ndutI18N && !noInterception) {
       const cfg = getNdutConfig('ndut-i18n')
       if (cfg.lang === 'detect' && cfg.detectFromParams) r.url = '/:lang' + r.url
@@ -71,7 +72,7 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
 
     if (!r.method.includes('CUSTOM')) {
       mod.method = r.method
-      mod.config = { config: { name: r.name } }
+      mod.config = { name: r.name || mod.name }
       scope.route(mod)
       scope.log.debug(`* ${_.padEnd('[' + r.method + ']', 8, ' ')} ${_.isEmpty(prefix) ? '' : ('/' + prefix)}${r.url}`)
     } else if (_.isFunction(customBuilder)) {
