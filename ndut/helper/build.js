@@ -68,7 +68,9 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
       if (cfg.lang === 'detect' && cfg.detectFromParams) r.url = '/:lang' + r.url
     }
     mod.url = r.url
-    mod.ndutAlias = r.alias
+    mod.ndutAlias = r.ndutAlias || r.alias
+
+    // console.log(mod)
 
     if (!r.method.includes('CUSTOM')) {
       mod.method = r.method
