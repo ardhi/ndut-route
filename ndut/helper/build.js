@@ -70,7 +70,7 @@ module.exports = async function (scope, { name, scanDirs = [], prefix = '', notF
     mod.url = r.url
     mod.ndutAlias = r.ndutAlias || r.alias
 
-    // console.log(mod)
+    //console.log(mod)
 
     if (!r.method.includes('CUSTOM')) {
       mod.method = r.method
